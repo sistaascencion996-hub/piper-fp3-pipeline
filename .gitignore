@@ -1,0 +1,66 @@
+# Local configuration / credentials
+.env
+.env.*
+!.env.example
+config/pipeline.local.json
+config/*.local.json
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*.token
+credentials*
+secrets*
+
+# Robot data and large artifacts
+data/raw/*
+data/processed/*
+data/h5/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/h5/.gitkeep
+*.h5
+*.hdf5
+*.bag
+*.svo
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.npy
+*.npz
+*.csv
+
+# Model weights / training outputs
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+checkpoints/
+models/
+outputs/
+training_outputs/
+logs/
+wandb/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary
+*.tmp
+*.temp
+*.bak

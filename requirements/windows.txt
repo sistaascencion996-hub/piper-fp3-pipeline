@@ -1,0 +1,9 @@
+# Hardware-facing Windows dependencies
+numpy
+scipy
+h5py
+opencv-python
+pyrealsense2
+pyAgxArm
+# Windows pyAgxArm agx_cando backend may require:
+python-can-agx-cando

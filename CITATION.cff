@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this Piper-FP3 integration pipeline, please cite this repository and the FP3 paper."
+title: "Piper FP3 Pipeline: D405/D455 Data-to-Deployment Integration"
+type: software
+authors:
+  - family-names: Wang
+    given-names: Jingzhe
+repository-code: "https://github.com/sistaascencion996-hub/piper-fp3-pipeline"
+license: MIT
+version: 0.1.0
+date-released: 2026-08-18
+preferred-citation:
+  type: software
+  title: "Piper FP3 Pipeline: D405/D455 Data-to-Deployment Integration"
+  authors:
+    - family-names: Wang
+      given-names: Jingzhe
+  year: 2026

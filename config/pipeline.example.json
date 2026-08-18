@@ -1,0 +1,59 @@
+{
+  "project": {
+    "name": "piper-fp3-pipeline",
+    "task": "Fold the towel from right to left."
+  },
+  "windows": {
+    "python": "C:\\path\\to\\python.exe",
+    "project_root": "C:\\path\\to\\piper-fp3-pipeline",
+    "raw_root": "C:\\path\\to\\piper-fp3-pipeline\\data\\raw"
+  },
+  "remote": {
+    "ssh_user": "YOUR_USER",
+    "host": "YOUR_GPU_HOST",
+    "repo": "/path/to/3d-foundation-policy",
+    "conda_python": "/path/to/conda",
+    "conda_env": "fp3",
+    "raw_root": "/path/to/fp3_raw_uncalibrated",
+    "h5_root": "/path/to/fp3_h5_uncalibrated",
+    "training_output_root": "/path/to/training_outputs",
+    "fixedopt_template": "/path/to/validated_fp3_train_template.json",
+    "bestloss_config": "/path/to/piper_fp3_train_PIPELINE_BESTLOSS.json",
+    "pretrained": "/path/to/fp3_pretrained_weight.pth"
+  },
+  "cameras": {
+    "D405_wrist_serial": "YOUR_D405_SERIAL",
+    "D455_external_serial": "YOUR_D455_SERIAL",
+    "points_per_camera": 8000,
+    "pointcloud_frame": "camera_local_uncalibrated"
+  },
+  "robot": {
+    "model": "Piper",
+    "firmware_family": "V189",
+    "can_interface": "agx_cando",
+    "can_channel": "0",
+    "can_bitrate": 1000000
+  },
+  "training": {
+    "num_epochs": 2000,
+    "steps_per_epoch": 5,
+    "optimizer_steps": 10000,
+    "learning_rate": 0.0001,
+    "ema": true,
+    "checkpoint_policy": "global_min_epoch_train_loss",
+    "checkpoint_filename": "model_best_train_loss.pth"
+  },
+  "inference": {
+    "port": 5555,
+    "replan_every_step": false
+  },
+  "robot_run": {
+    "speed_percent": 20,
+    "return_speed_percent": 10,
+    "return_timeout_sec": 15,
+    "gripper_width_m": 0.08,
+    "gripper_force": 1.0,
+    "min_depth_m": 0.05,
+    "max_depth_m": 1.0
+  }
+}

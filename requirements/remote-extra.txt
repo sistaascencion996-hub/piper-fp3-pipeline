@@ -1,0 +1,7 @@
+# Extra packages used by the integration scripts.
+# FP3 itself must be installed separately in its own environment.
+numpy
+scipy
+h5py
+tqdm
+torch
