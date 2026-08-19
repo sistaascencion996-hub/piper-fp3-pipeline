@@ -1,5 +1,7 @@
 # Piper FP3 Pipeline（中文）
 
+[English](README.md) | 简体中文
+
 这是一个面向 **AgileX/松灵 Piper + D405 + D455 + FP3** 的完整数据到部署工程。
 
 它不是简单的“几个 Python 文件”，而是完整链：

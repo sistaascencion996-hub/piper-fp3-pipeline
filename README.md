@@ -1,5 +1,8 @@
 # Piper FP3 Pipeline
 
+[English] | [简体中文](README.zh-CN.md)
+
+
 End-to-end integration for **AgileX Piper + Intel RealSense D405/D455 + FP3**:
 data collection, camera-local point-cloud conversion, dataset audits, FP3
 fine-tuning, TCP inference, and physical robot execution.
