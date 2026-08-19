@@ -368,8 +368,8 @@ def main():
     h5_path = episode_dir / "frames.h5"
     metadata_path = episode_dir / "metadata.json"
 
-    d405 = RealSenseCamera(D405_SERIAL, "D405_wrist").start()
-    d455 = RealSenseCamera(D455_SERIAL, "D455_external").start()
+    d405 = RealSenseCamera(args.d405_serial, "D405_wrist").start()
+    d455 = RealSenseCamera(args.d455_serial, "D455_external").start()
 
     # Read-only Piper follower feedback through the verified Windows agx_cando backend.
     piper = AgxCandoPiperReader(channel="0", bitrate=1_000_000).start()
@@ -381,8 +381,8 @@ def main():
     print("RAW-ONLY FP3 SOURCE CAPTURE")
     print("No calibration is written. No fake action is written.")
     print("Robot path is read-only follower feedback via agx_cando.")
-    print("D405:", D405_SERIAL, "depth_scale=", d405.depth_scale)
-    print("D455:", D455_SERIAL, "depth_scale=", d455.depth_scale)
+    print("D405:", args.d405_serial, "depth_scale=", d405.depth_scale)
+    print("D455:", args.d455_serial, "depth_scale=", d455.depth_scale)
     print("Output:", episode_dir)
     print(f"Recording starts in {args.countdown} s...")
     for i in range(args.countdown, 0, -1):
@@ -410,8 +410,8 @@ def main():
 
             cam_datasets = {}
             for role, serial, cam, first in [
-                ("D405", D405_SERIAL, d405, first405),
-                ("D455", D455_SERIAL, d455, first455),
+                ("D405", args.d405_serial, d405, first405),
+                ("D455", args.d455_serial, d455, first455),
             ]:
                 g = cams.create_group(role)
                 g.attrs["serial"] = serial
@@ -554,7 +554,7 @@ def main():
         "instruction": args.instruction,
         "record_fps": float(args.record_fps),
         "camera_roles": {"D405": "wrist", "D455": "external"},
-        "camera_serials": {"D405": D405_SERIAL, "D455": D455_SERIAL},
+        "camera_serials": {"D405": args.d405_serial, "D455": args.d455_serial},
         "calibration_complete": False,
         "action_complete": False,
         "action_source": "follower_future_trajectory_pending",
