@@ -64,3 +64,6 @@ desktop.ini
 *.tmp
 *.temp
 *.bak
+
+# Public demo media
+!assets/*.mp4

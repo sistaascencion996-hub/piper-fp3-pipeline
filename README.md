@@ -7,6 +7,27 @@ fine-tuning, TCP inference, and physical robot execution.
 > This repository is an integration layer. It does not vendor the upstream FP3
 > source tree, pretrained FP3 weights, robot datasets, or third-party SDKs.
 
+
+## Demo
+
+### Teleoperation Demonstration
+
+Leader-to-follower teleoperation demonstration for the towel-folding task.
+
+![Teleoperation Demonstration](assets/teleoperation_demo_privacy.gif)
+
+[View higher-quality MP4](assets/teleoperation_demo_privacy.mp4)
+
+### FP3 Policy Rollout
+
+Live FP3 policy inference and physical rollout on the Piper robot.
+
+![FP3 Policy Rollout](assets/fp3_rollout_privacy.gif)
+
+[View higher-quality MP4](assets/fp3_rollout_privacy.mp4)
+
+> Demo media has been privacy-processed: non-essential background regions are blurred and the public video versions contain no original audio.
+
 ## What this repository solves
 
 The pipeline connects the full robot-learning lifecycle:

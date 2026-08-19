@@ -17,6 +17,26 @@
 → Piper 执行动作
 ```
 
+## Demo 演示
+
+### 主臂 → 从臂遥操作叠毛巾
+
+以下为主臂控制从臂完成叠毛巾动作的遥操作示范：
+
+![Teleoperation Demo](assets/teleoperation_demo_privacy.gif)
+
+[查看高清 MP4](assets/teleoperation_demo_privacy.mp4)
+
+### FP3 模型实机 Rollout
+
+以下为 FP3 模型在线推理并控制 Piper 实机运动的实验片段：
+
+![FP3 Rollout](assets/fp3_rollout_privacy.gif)
+
+[查看高清 MP4](assets/fp3_rollout_privacy.mp4)
+
+> 公开演示素材已经进行隐私处理：非必要背景区域经过模糊处理，公开视频不包含原始音频。
+
 ## GitHub 上需要完整数据吗？
 
 **需要完整的数据链，但不需要把完整数据本体塞进 GitHub。**
