@@ -8,6 +8,20 @@ fine-tuning, TCP inference, and physical robot execution.
 > source tree, pretrained FP3 weights, robot datasets, or third-party SDKs.
 
 
+
+## Current Status
+
+- [x] Piper leader-follower teleoperation
+- [x] D405 + D455 RGB-D recording
+- [x] FP3 HDF5 conversion
+- [x] Dataset/action audits
+- [x] FP3 LoRA fine-tuning
+- [x] Physical Piper inference pipeline
+- [x] Correct FP3 rot6d to Piper pose decoding
+- [ ] Robust towel-folding policy
+- [ ] Larger demonstration dataset
+- [ ] Quantitative evaluation
+
 ## Demo
 
 ### Teleoperation Demonstration
