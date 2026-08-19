@@ -1,0 +1,11 @@
+﻿# Core dependencies used by this repository's remote FP3 integration scripts.
+# FP3, OpenPoints, and robomimic are source dependencies and must be installed
+# from their corresponding source repositories; they are not installed here.
+
+--extra-index-url https://download.pytorch.org/whl/cu118
+
+numpy==1.26.4
+h5py==3.11.0
+tqdm==4.66.4
+accelerate==0.33.0
+torch==2.0.1+cu118
