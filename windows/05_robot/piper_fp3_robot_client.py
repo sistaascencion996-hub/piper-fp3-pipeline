@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-Windows Piper + mixed RGB-D camera client for FP3 real-robot execution.
+Windows Piper + D405/D455 RGB-D client for FP3 real-robot execution.
 
 Camera mapping used by this file:
-- hand camera: Orbbec DaBai DC1
+- hand camera: Intel RealSense D405
 - varied/external camera: Intel RealSense D455
 
 Important:
@@ -32,24 +32,6 @@ import msvcrt
 import numpy as np
 import pyrealsense2 as rs
 
-try:
-    from pyorbbecsdk import (
-        Config as OBConfig,
-        Context as OBContext,
-        OBAlignMode,
-        OBError,
-        OBSensorType,
-        Pipeline as OBPipeline,
-    )
-    ORBBEC_IMPORT_ERROR = None
-except Exception as exc:
-    OBConfig = None
-    OBContext = None
-    OBAlignMode = None
-    OBError = Exception
-    OBSensorType = None
-    OBPipeline = None
-    ORBBEC_IMPORT_ERROR = exc
 from scipy.optimize import least_squares
 from scipy.spatial.transform import Rotation
 
@@ -95,51 +77,6 @@ def recv_json(sock: socket.socket) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise TypeError("server response is not an object")
     return value
-
-
-def list_rgbd_devices() -> None:
-    print("===== Intel RealSense =====")
-    devices = rs.context().query_devices()
-    if len(devices) == 0:
-        print("No RealSense devices found.")
-    else:
-        for index, dev in enumerate(devices):
-            print(
-                f"[{index}] name={dev.get_info(rs.camera_info.name)} "
-                f"serial={dev.get_info(rs.camera_info.serial_number)}"
-            )
-
-    print("\n===== Orbbec =====")
-    if ORBBEC_IMPORT_ERROR is not None:
-        print(
-            "Orbbec Python SDK is not installed: "
-            f"{type(ORBBEC_IMPORT_ERROR).__name__}: {ORBBEC_IMPORT_ERROR}"
-        )
-        return
-
-    context = OBContext()
-    device_list = context.query_devices()
-    count = int(device_list.get_count())
-    if count == 0:
-        print("No Orbbec devices found.")
-        return
-
-    for index in range(count):
-        device = device_list.get_device_by_index(index)
-        info = device.get_device_info()
-        try:
-            name = info.get_name()
-        except Exception:
-            name = str(info)
-        try:
-            serial = info.get_serial_number()
-        except Exception:
-            serial = "unknown"
-        try:
-            pid = info.get_pid()
-        except Exception:
-            pid = "unknown"
-        print(f"[{index}] name={name} serial={serial} pid={pid}")
 
 
 def load_transform(path: str | None, label: str) -> np.ndarray:
@@ -216,170 +153,6 @@ class RealSensePointCloud:
             workspace_min,
             workspace_max,
         )
-
-
-class OrbbecPointCloud:
-    """DaBai DC1 colored point cloud using Orbbec SDK v1.x bindings."""
-
-    def __init__(self):
-        if ORBBEC_IMPORT_ERROR is not None:
-            raise RuntimeError(
-                "Orbbec Python SDK is unavailable. Install "
-                "'pyorbbecsdk-community' in the lerobot environment first. "
-                f"Original import error: {ORBBEC_IMPORT_ERROR}"
-            )
-
-        self.pipeline = OBPipeline()
-        self.device = self.pipeline.get_device()
-        info = self.device.get_device_info()
-        try:
-            self.name = str(info.get_name())
-        except Exception:
-            self.name = "Orbbec"
-        try:
-            self.serial = str(info.get_serial_number())
-        except Exception:
-            self.serial = "unknown"
-
-        config = OBConfig()
-
-        depth_profiles = self.pipeline.get_stream_profile_list(
-            OBSensorType.DEPTH_SENSOR
-        )
-        if depth_profiles is None:
-            raise RuntimeError("DaBai DC1 has no usable depth profile")
-        depth_profile = depth_profiles.get_default_video_stream_profile()
-        config.enable_stream(depth_profile)
-
-        color_profiles = self.pipeline.get_stream_profile_list(
-            OBSensorType.COLOR_SENSOR
-        )
-        if color_profiles is None:
-            raise RuntimeError("DaBai DC1 has no usable color profile")
-        color_profile = color_profiles.get_default_video_stream_profile()
-        config.enable_stream(color_profile)
-
-        # Official Orbbec point-cloud samples use D2C alignment before
-        # generating a colored cloud. Prefer hardware alignment, then software.
-        try:
-            config.set_align_mode(OBAlignMode.HW_MODE)
-            self.pipeline.start(config)
-        except Exception:
-            try:
-                config = OBConfig()
-                config.enable_stream(depth_profile)
-                config.enable_stream(color_profile)
-                config.set_align_mode(OBAlignMode.SW_MODE)
-                self.pipeline.start(config)
-            except Exception as exc:
-                raise RuntimeError(
-                    "Could not start DaBai DC1 with depth-to-color alignment"
-                ) from exc
-
-        self.pipeline.enable_frame_sync()
-        for _ in range(15):
-            self.pipeline.wait_for_frames(1000)
-
-        print(
-            f"Opened Orbbec hand camera: name={self.name} serial={self.serial}"
-        )
-
-    def stop(self) -> None:
-        self.pipeline.stop()
-
-    @staticmethod
-    def _points_to_array(points: Any) -> np.ndarray:
-        arr = np.asarray([tuple(point) for point in points], dtype=np.float32)
-        if arr.ndim != 2 or arr.shape[1] < 6:
-            raise RuntimeError(
-                f"unexpected Orbbec colored point-cloud shape: {arr.shape}"
-            )
-        return arr[:, :6]
-
-    def capture_pointcloud(
-        self,
-        transform: np.ndarray,
-        point_count: int,
-        rgb_mode: str,
-        min_depth: float,
-        max_depth: float,
-        rng: np.random.Generator,
-        workspace_min: np.ndarray | None = None,
-        workspace_max: np.ndarray | None = None,
-    ) -> np.ndarray:
-        frames = None
-        for _ in range(10):
-            frames = self.pipeline.wait_for_frames(1000)
-            if frames is not None and frames.get_depth_frame() is not None:
-                break
-        if frames is None or frames.get_depth_frame() is None:
-            raise RuntimeError("missing DaBai DC1 depth/color frames")
-
-        camera_param = self.pipeline.get_camera_param()
-        points = frames.get_color_point_cloud(camera_param)
-        if points is None or len(points) == 0:
-            raise RuntimeError("DaBai DC1 returned an empty colored point cloud")
-
-        cloud = self._points_to_array(points)
-        xyz_camera = cloud[:, :3].astype(np.float64)
-        rgb = cloud[:, 3:6].astype(np.float32)
-
-        # Legacy Orbbec point clouds are commonly expressed in millimetres.
-        # Auto-detect by scene scale so the FP3 input remains in metres.
-        finite_xyz = xyz_camera[np.isfinite(xyz_camera).all(axis=1)]
-        if finite_xyz.size == 0:
-            raise RuntimeError("DaBai DC1 point cloud contains no finite XYZ")
-        median_abs_z = float(np.median(np.abs(finite_xyz[:, 2])))
-        if median_abs_z > 10.0:
-            xyz_camera *= 0.001
-
-        valid = (
-            np.isfinite(xyz_camera).all(axis=1)
-            & np.isfinite(rgb).all(axis=1)
-            & (xyz_camera[:, 2] >= min_depth)
-            & (xyz_camera[:, 2] <= max_depth)
-        )
-
-        xyz_camera = xyz_camera[valid]
-        rgb = rgb[valid]
-        if xyz_camera.shape[0] == 0:
-            raise RuntimeError("all DaBai DC1 points were removed by depth filtering")
-
-        rotation = transform[:3, :3]
-        translation = transform[:3, 3]
-        xyz_base = xyz_camera @ rotation.T + translation
-
-        if rgb_mode == "minus1_1":
-            rgb = rgb / 127.5 - 1.0
-        elif rgb_mode == "zero1":
-            rgb = rgb / 255.0
-        elif rgb_mode == "zero255":
-            pass
-        else:
-            raise ValueError(f"unsupported RGB mode: {rgb_mode}")
-
-        valid = np.isfinite(xyz_base).all(axis=1) & np.isfinite(rgb).all(axis=1)
-        if workspace_min is not None and workspace_max is not None:
-            valid &= np.all(xyz_base >= workspace_min, axis=1)
-            valid &= np.all(xyz_base <= workspace_max, axis=1)
-
-        xyz_base = xyz_base[valid]
-        rgb = rgb[valid]
-        if xyz_base.shape[0] == 0:
-            raise RuntimeError(
-                "all DaBai DC1 points were removed by workspace filtering"
-            )
-
-        replace = xyz_base.shape[0] < point_count
-        indices = rng.choice(
-            xyz_base.shape[0],
-            size=point_count,
-            replace=replace,
-        )
-        return np.concatenate(
-            (xyz_base[indices], rgb[indices]),
-            axis=1,
-        ).astype(np.float32)
 
 
 def raw_to_pointcloud(
