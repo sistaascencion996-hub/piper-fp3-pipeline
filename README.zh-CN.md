@@ -95,6 +95,22 @@ GitHub 应该公开：
 - server：默认不启用 `replan_every_step`
 - client：正确 rot6d 解码 + Ctrl+C 回启动初始关节位
 
+## 安装集成依赖
+
+Windows 机械臂电脑：
+
+```powershell
+pip install -r requirements-windows.txt
+```
+
+远程 FP3 主机：
+
+```bash
+pip install -r requirements-remote.txt
+```
+
+FP3 / 3D Foundation Policy、OpenPoints 和 robomimic 属于源码依赖，需要分别从对应的源码仓库安装。这些依赖不会被打包到本仓库中，也不会由上述 requirements 文件自动安装。
+
 ## 最短命令
 
 Windows：

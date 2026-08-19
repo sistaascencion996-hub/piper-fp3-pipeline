@@ -75,6 +75,22 @@ flowchart LR
 - FP3 / 3D Foundation Policy installed separately
 - `pyAgxArm` for Piper control
 
+## Install integration dependencies
+
+Windows robot computer:
+
+```powershell
+pip install -r requirements-windows.txt
+```
+
+Remote FP3 host:
+
+```bash
+pip install -r requirements-remote.txt
+```
+
+FP3 / 3D Foundation Policy, OpenPoints, and robomimic are source dependencies and must be installed from their corresponding source repositories. They are intentionally not vendored or installed by these requirements files.
+
 ## Repository structure
 
 ```text
